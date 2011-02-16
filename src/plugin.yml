@@ -1,0 +1,16 @@
+## YAML Template.
+---
+name: AgentOrange
+main: org.bukkit.awesomepants.agentorange.AgentOrange
+version: 1.0
+website: http://bukkitfun.tumblr.com/
+author: AwesomePants
+description: >
+             Deforestation for the masses.
+commands:
+  agentorange:
+    description: Deforestation!
+    usage: |
+           Usage -
+           /<command> ???
+           /<command> profit
