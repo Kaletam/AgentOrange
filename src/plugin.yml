@@ -12,5 +12,6 @@ commands:
     description: Deforestation!
     usage: |
            Usage -
-           /<command> ???
-           /<command> profit
+           /<command> [deforest] - Deforests a 40x40 cube centered on the user.
+           /<command> napalm - Not yet implemented.
+           /<command> forestfire - Not yet implemented.

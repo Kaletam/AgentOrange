@@ -2,10 +2,10 @@ package org.bukkit.awesomepants.agentorange;
 
 // Java imports
 import java.io.File;
+import java.util.List;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Random;
 
 // org.bukkit imports
 import org.bukkit.entity.Player;
@@ -17,6 +17,10 @@ import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.Material;
+
 
 // Other imports
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -80,13 +84,61 @@ public class AgentOrange extends JavaPlugin
     @Override
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args)
     {
+	Player p = (Player) sender;
+	List worlds;
+
 	if ((sender instanceof Player)) // If executed by the player.
 	{
-	    Player p = (Player) sender;
+	    // The bounds of the cube around the Player.
+	    int minX, minY, minZ;
+	    int maxX, maxY, maxZ;
+	    int radius = 20; // Hardcoded for now.
+	    int leavesDeforested = 0;
 
-	    if (this.permissionsEnabled && !this.permissions.Security.permission(p, "agentorange.deforest"))
+	    // Our helper Block.
+	    Block b;
+
+	    // For now, just implement Deforest, and check against permissions.
+	    // In the future, potentially implement /agentorange napalm and /agentorange forestfire.
+	    if (this.permissionsEnabled && this.permissions.Security.permission(p, "agentorange.deforest"))
 	    {
-		getServer().broadcastMessage(p.getName() + " has deforested a region of the world.");
+		// Get all World objects on this Server.
+		worlds = getServer().getWorlds();
+
+		// Since there should only be one, right now, go with the first one.
+		// If there *are* more than one World, presume the first is the default world.
+		// Eventually, we need to be able to determine *which* World the Player is in, which I haven't figured out yet - no Player.getWorld(), for example.
+		//	However, there are World.getEntities() and World.getLivingEntities(), which return List<[Living]Entity>, so we should be able to run a List l.contains(Player p).
+		//	So what we should be able to do is iterate through worlds, execute .getLivingEntities, and assign w to the World that returns true. We'll do that later.
+		World w = (World) worlds.get(0);
+
+		minX = (int) Math.round(p.getLocation().getX() - radius);
+		minY = (int) Math.round(p.getLocation().getY() - radius);
+		minZ = (int) Math.round(p.getLocation().getZ() - radius);
+		maxX = (int) Math.round(p.getLocation().getX() + radius);
+		maxY = (int) Math.round(p.getLocation().getY() + radius);
+		maxZ = (int) Math.round(p.getLocation().getZ() + radius);
+
+		// For possible useful reasons in the future, start at the top and work our way down.
+		for (int y = maxY; y >= minY; y--)
+		{
+		    for (int x = minX; x <= maxX; x++)
+		    {
+			for (int z = minZ; z <= maxZ; z++)
+			{
+			    b = w.getBlockAt(x, y, z);
+
+			    if (b.getType() == Material.LEAVES)
+			    {
+				b.setType(Material.AIR);
+				leavesDeforested++;
+			    }
+			}
+		    }
+		}
+
+		// We can make this optional in the future.
+		getServer().broadcastMessage(String.format("%s has deforested a region of the world (%s leaves destroyed).", p.getName(), leavesDeforested));
 
 		return true;
 	    }
@@ -121,6 +173,7 @@ public class AgentOrange extends JavaPlugin
 //	    //System.out.println("Console test!");
 //	    return false; // Right now, we don't actually succeed or fail, but for the console, let's output usage for testing purposes.
 //	}
+
 	return false;
     }
 
