@@ -132,8 +132,9 @@ public class AgentOrange extends JavaPlugin
 		case NAPALM:
 		    stringFormat = "%s dropped napalm on some trees (%s leaves destroyed)!";
 		    m = Material.LAVA;
-
-		    break;
+		    p.sendMessage("Napalm aka lava disabled for now.");
+		    return true;
+		//break;
 		case FORESTFIRE:
 		    stringFormat = "%s has set fire to some trees (%s leaves destroyed)!";
 		    m = Material.FIRE;
