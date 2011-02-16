@@ -1,7 +1,32 @@
-AgentOrange v1.0 For Bukkit
+AgentOrange v1.1 For Bukkit
 
-A simple plugin.
+A team AwesomePants plugin by Kaletam.
+
+
 
 Got so many leaves, creepers are spawning amongst them and leaping down upon innocent lumberjacks?
 
 Drop AgentOrange on them!
+
+Or, if you're more destructively inclined, drop napalm upon the trees, or just plain set them on fire.
+
+
+
+WARNING: "napalm" is lava, and in this version, is naively applied - it will turn every leaf block in the radius into lava.
+
+
+
+Usage:
+	/agentorange deforest - Remove leaves in a 40x40 cube centered on the player.
+	/agentorange napalm - Turns leaves into lava in a 40x40 cube centered on the player.
+	/agentorange forestfire - Turns leaves into fire in a 40x40 cube centered on the player.
+
+Permissions:
+	Permissions (http://forums.bukkit.org/threads/admn-info-permissions-v2-0-revolutionizing-the-group-system.1403/) is supported.
+	
+	Permissions are:
+		agentorange.deforest
+		agentorange.napalm
+		agentorange.forestfire
+	
+	Be particularly careful in giving napalm permission.

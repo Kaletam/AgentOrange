@@ -2,7 +2,7 @@
 ---
 name: AgentOrange
 main: org.bukkit.awesomepants.agentorange.AgentOrange
-version: 1.0
+version: 1.1
 website: http://bukkitfun.tumblr.com/
 author: AwesomePants
 description: >
@@ -12,6 +12,6 @@ commands:
     description: Deforestation!
     usage: |
            Usage -
-           /<command> [deforest] - Deforests a 40x40 cube centered on the user.
-           /<command> napalm - Not yet implemented.
-           /<command> forestfire - Not yet implemented.
+           /<command> deforest - Deforests a 40x40 cube centered on the user.
+           /<command> napalm - Drops napalm onto trees (turns leaves into lava).
+           /<command> forestfire - Sets trees on fire (turns leaves into fire).

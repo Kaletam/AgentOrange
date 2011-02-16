@@ -21,7 +21,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.Material;
 
-
 // Other imports
 import com.nijikokun.bukkit.Permissions.Permissions;
 
@@ -29,6 +28,12 @@ import com.nijikokun.bukkit.Permissions.Permissions;
  * AgentOrange for Bukkit
  *
  * @author Kaletam
+ *
+ * TODO: Add twitter support for ServerEvents.
+ * TODO: Add a configuration file to control tweeting.
+ * TODO: Make napalm "smarter" - find one block per tree to turn into lava, so that a region isn't flooded.
+ * TODO: ???
+ *
  */
 public class AgentOrange extends JavaPlugin
 {
@@ -98,9 +103,51 @@ public class AgentOrange extends JavaPlugin
 	    // Our helper Block.
 	    Block b;
 
-	    // For now, just implement Deforest, and check against permissions.
-	    // In the future, potentially implement /agentorange napalm and /agentorange forestfire.
-	    if (this.permissionsEnabled && this.permissions.Security.permission(p, "agentorange.deforest"))
+	    // Our helper Material.
+	    Material m;
+
+	    // Subcommand
+	    SubCommands sub = null;
+
+	    String stringFormat = "";
+
+	    // See if the first argument - our subcommand - is a valid subcommand or not.
+	    // If not, return false and let the engine display usage text.
+	    try
+	    {
+		sub = SubCommands.valueOf(args[0].toUpperCase());
+	    }
+	    catch (Exception ex) // Don't actually do anything, just return false (triggering display of usage as per plugin.yml).
+	    {
+		return false;
+	    }
+
+	    switch (sub)
+	    {
+		case DEFOREST:
+		    stringFormat = "%s dropped Agent Orange on some trees (%s leaves destroyed)!";
+		    m = Material.AIR;
+
+		    break;
+		case NAPALM:
+		    stringFormat = "%s dropped napalm on some trees (%s leaves destroyed)!";
+		    m = Material.LAVA;
+
+		    break;
+		case FORESTFIRE:
+		    stringFormat = "%s has set fire to some trees (%s leaves destroyed)!";
+		    m = Material.FIRE;
+
+		    break;
+		default: // We should never get here.
+		    return false;
+	    }
+
+	    // Check that either permissions are granted for the appropriate subcommand, or that the user is an op.
+	    if ((this.permissionsEnabled && this.permissions.Security.permission(p, "agentorange.deforest") && sub == SubCommands.DEFOREST)
+		    || (this.permissionsEnabled && this.permissions.Security.permission(p, "agentorange.napalm") && sub == SubCommands.NAPALM)
+		    || (this.permissionsEnabled && this.permissions.Security.permission(p, "agentorange.forestfire") && sub == SubCommands.FORESTFIRE)
+		    || (!this.permissionsEnabled && p.isOp()))
 	    {
 		// Get all World objects on this Server.
 		worlds = getServer().getWorlds();
@@ -130,49 +177,32 @@ public class AgentOrange extends JavaPlugin
 
 			    if (b.getType() == Material.LEAVES)
 			    {
-				b.setType(Material.AIR);
+				b.setType(m);
 				leavesDeforested++;
 			    }
 			}
 		    }
 		}
 
+		stringFormat = String.format(stringFormat, p.getName(), leavesDeforested);
 		// We can make this optional in the future.
-		getServer().broadcastMessage(String.format("%s has deforested a region of the world (%s leaves destroyed).", p.getName(), leavesDeforested));
+		log.log(Level.INFO, stringFormat);
+		getServer().broadcastMessage(stringFormat);
 
 		return true;
 	    }
-
-//	    // This method for getting subcommands stolen from HotSwap.
-//	    // No sub commands right now, but keep this code here for now in case we implement any.
-//	    SubCommands sub = null;
-//
-//	    try
-//	    {
-//		sub = SubCommands.valueOf(args[0].toUpperCase());
-//	    }
-//	    catch (Exception ex) // Don't actually do anything, just return false (triggering display of usage as per plugin.yml).
-//	    {
-//		return false;
-//	    }
-//
-//	    switch (sub)
-//	    {
-//		case NOTHING:
-//		    p.sendMessage(quote);
-//
-//		    return true;
-//		default:
-//		    return false;
-//	    }
+	    else
+	    {
+		p.sendMessage(String.format("You don't have permission to execute %s.", sub));
+	    }
 	}
-//	else
-//	{
+	else
+	{
 //	    // Don't do anything right now.
 //	    //log.log(Level.INFO, "We're in onCommand, !(sender instanceof Player).");
 //	    //System.out.println("Console test!");
-//	    return false; // Right now, we don't actually succeed or fail, but for the console, let's output usage for testing purposes.
-//	}
+	    return false; // Right now, we don't actually succeed or fail, but for the console, let's output usage for testing purposes.
+	}
 
 	return false;
     }
@@ -195,10 +225,10 @@ public class AgentOrange extends JavaPlugin
 	    }
 	}
     }
+
     // This method for getting subcommands stolen from HotSwap.
-    // No subcommands, right now, but keep this in case we implement any.
-//    private enum SubCommands
-//    {
-//	NOTHING
-//    }
+    private enum SubCommands
+    {
+	DEFOREST, NAPALM, FORESTFIRE
+    }
 }
